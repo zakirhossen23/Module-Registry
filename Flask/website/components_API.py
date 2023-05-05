@@ -29,7 +29,7 @@ def updatePackage(MetaData,Data,ID):
         ZipFile = download_fromURL(URL)
         ZipFile = base64.b64encode(ZipFile.read()).decode('utf-8')
         MetaDataObj = PackageMetadata(MetaData["Name"],MetaData["Version"])
-        uploadToBucket(ZipFile,MetaDataObj.blob_name(), 'bucket-proto1')
+        uploadToBucket(ZipFile,MetaDataObj.blob_name(), 'bucket-acme1')
         return make_response(jsonify({'description': 'Version is updated.'}), 200)
     elif "Content" in Data and Data["Content"] != None:
         ZipFile_bytes = base64.b64decode(Data["Content"].encode('utf-8'))
@@ -38,7 +38,7 @@ def updatePackage(MetaData,Data,ID):
         ratings = rate_Package(URL)
         MetaDataObj = PackageMetadata(MetaData["Name"],MetaData["Version"])
         add_package(MetaData["Name"],MetaData["Version"],ratings,URL,ID=ID,JS=Data["JSProgram"])
-        uploadToBucket(Data["Content"],MetaDataObj.blob_name(), 'bucket-proto1')
+        uploadToBucket(Data["Content"],MetaDataObj.blob_name(), 'bucket-acme1')
         #Data = PackageData(JS,request.json["ZipFile"])
         return make_response(jsonify({'description': 'Version is updated.'}), 200)
 
@@ -60,7 +60,7 @@ def OffsetReturn(output,offset):
         return [output[startIndex]]
     return output[startIndex:endIndex]
 
-def downloadFromBucket(moduleName, bucketName='bucket-proto1'):
+def downloadFromBucket(moduleName, bucketName='bucket-acme1'):
     # storage_client = storage.Client.from_service_account_json('pKey.json')
     storage_client = storage.Client()
     # exists = Bucket(storage_client, moduleName).exists()
@@ -70,7 +70,7 @@ def downloadFromBucket(moduleName, bucketName='bucket-proto1'):
         # address = "https://storage.googleapis.com/"
         # address += bucketName + '/'
         # address += moduleName
-        # # address = 'https://storage.googleapis.com/bucket-proto1/lodash-5.0.0'
+        # # address = 'https://storage.googleapis.com/bucket-acme1/lodash-5.0.0'
         # return address
         b = blob.download_as_string()
         string = b.decode('utf-8')
@@ -83,7 +83,7 @@ def downloadFromBucket(moduleName, bucketName='bucket-proto1'):
         print("Error: Module not found")
         return 0
 
-def uploadToBucket(contents, destination_blob_name, bucket_name='bucket-proto1'):
+def uploadToBucket(contents, destination_blob_name, bucket_name='bucket-acme1'):
     # storage_client = storage.Client.from_service_account_json('pKey.json')
     storage_client = storage.Client()
     # destination_blob_name = "storage-object-name"
@@ -102,6 +102,7 @@ def uploadToBucket(contents, destination_blob_name, bucket_name='bucket-proto1')
 
 def download_fromURL(URL):
     token = os.getenv('GITHUB_TOKEN')
+
     urls = URL.split("/")
     api_url = urls[0] + '//api.' + urls[2] + '/repos/' + urls[3] + "/" + urls[4]
     filename = urls.pop()
@@ -151,8 +152,8 @@ def uploadRatings(Name,Version,ratings,URL,JS = None,trusted = False):
     if trusted:
         try:
             ID = add_package(Name,Version,ratings,URL,JS)
-        except:
-            abort(409, "Package exists already")
+        except Exception  as e:
+            abort(409, "Package exists already " + str(e))
         # ID = add_package(Name,Version,ratings,URL,JS)
         return ID
     else:

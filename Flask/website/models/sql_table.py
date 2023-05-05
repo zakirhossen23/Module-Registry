@@ -5,12 +5,15 @@ import sqlalchemy
 from google.cloud.sql.connector import Connector, IPTypes
 import pymysql
 from google.cloud import storage
+import json
+
+
 
 def connect_with_connector() -> sqlalchemy.engine.base.Engine:
-    instance_connection_name = "module-registry-ece461:us-central1:ece461-module-registry"
-    # db_user = "461-user"  # e.g. 'my-db-user'
-    # db_pass = "461-test"  # e.g. 'my-db-password'
-    # db_name = "Module-Registry"  # e.g. 'my-database'
+    instance_connection_name = "fluted-bot-385510:us-central1:module-registry"
+    # db_user = "root"  # e.g. 'my-db-user'
+    # db_pass = ""  # e.g. 'my-db-password'
+    # db_name = "module-registry"  # e.g. 'my-database'
     db_user = os.environ["DB_USER"]
     db_pass = os.environ["DB_PASS"]
     db_name = os.environ["DB_NAME"]
@@ -31,7 +34,9 @@ def connect_with_connector() -> sqlalchemy.engine.base.Engine:
 
     pool = sqlalchemy.create_engine(
         "mysql+pymysql://",
-        creator=getconn
+        creator=getconn,
+        echo=True
+        
         # ...
     )
     return pool
@@ -39,6 +44,7 @@ def connect_with_connector() -> sqlalchemy.engine.base.Engine:
 db = SQLAlchemy()
 
 class Packages_table(db.Model):
+    __tablename__ = "packages_table"
     ID = db.Column(db.Integer, primary_key=True, nullable=False,autoincrement=True)
     NAME = db.Column(db.String(255), unique=True, nullable=True)
     VERSION = db.Column(db.String(50), nullable=True)
@@ -51,7 +57,7 @@ class Packages_table(db.Model):
     PULLREQUEST = db.Column(db.Float, nullable=True)
     NETSCORE = db.Column(db.Float, nullable=True)
     URL = db.Column(db.String(99),nullable = True)
-    JS = db.Column(db.String(1000),nullable = True)
+    JS = db.Column(db.String(),nullable = True)
 
 
 def add_package(Name,Version,ratings,URL,JS,ID = None):
@@ -81,6 +87,8 @@ def add_package(Name,Version,ratings,URL,JS,ID = None):
             ID = ID
             )
     db.session.add(new_package)
+    print(db.session)
+    
     db.session.commit()
     Q = db.session.query(Packages_table).filter_by(NAME=Name,VERSION=Version)[0]
     return (Q.ID)
@@ -112,7 +120,7 @@ def delete_by_id(ID):
 def reset_all_packages():
     storage_client = storage.Client()
 #     storage_client = storage.Client.from_service_account_json('pKey.json')
-    bucket = storage_client.bucket('bucket-proto1')
+    bucket = storage_client.bucket('bucket-acme1')
     for blob in bucket.list_blobs():
         blob.delete()
     db.session.query(Packages_table).delete()

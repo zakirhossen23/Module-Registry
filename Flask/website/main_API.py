@@ -103,7 +103,7 @@ class PackageCreate(Resource):
             MetaData.ID = idx
             ZipFile = download_fromURL(URL)
             ZipFile = base64.b64encode(ZipFile.read()).decode('utf-8')
-            uploadToBucket(ZipFile,MetaData.blob_name(), 'bucket-proto1')
+            uploadToBucket(ZipFile,MetaData.blob_name(), 'bucket-acme1')
             Data = PackageData(JS,ZipFile)
             return make_response(jsonify({'metadata': MetaData.to_dict(ID=True),"data": Data.to_dict()}), 200)
         elif "Content" in request.json and request.json["Content"] != None:
@@ -113,7 +113,7 @@ class PackageCreate(Resource):
             ratings = rate_Package(URL)
             idx = uploadRatings(MetaData.Name.Name,MetaData.Version.Version,ratings,URL,JS,trusted=True)
             MetaData.ID = idx
-            uploadToBucket(request.json["Content"],MetaData.blob_name(), 'bucket-proto1')
+            uploadToBucket(request.json["Content"],MetaData.blob_name(), 'bucket-acme1')
             Data = PackageData(JS,request.json["Content"])
             return make_response(jsonify({'metadata': MetaData.to_dict(ID=True),"data": Data.to_dict()}), 200)
         return {'description' : 'Not as expected'}

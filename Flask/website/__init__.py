@@ -13,11 +13,11 @@ import pymysql
 def getconn():
     with Connector() as connector:
         conn = connector.connect(
-            "module-registry-ece461:us-central1:ece461-module-registry",
+            "fluted-bot-385510:us-central1:module-registry",
             "pymysql",
-            user="461-user",
-            password="461-test",
-            db="Module-Registry",
+            user="root",
+            password="",
+            db="module-registry	",
             ip_type=IPTypes.PUBLIC
         )
         return conn
@@ -34,7 +34,7 @@ def create_app():
     api.add_resource(PackageRate,"/package/<string:id>/rate")
     api.add_resource(PackageByRegExGet,"/package/byRegex/<string:rate>")
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://461-user:461-test@/Module-Registry?unix_socket=/cloudsql/module-registry-ece461:us-central1:ece461-module-registry"
+    app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:@/module-registry?unix_socket=/cloudsql/module-registry:us-central1:module-registry"
 
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         "creator": getconn

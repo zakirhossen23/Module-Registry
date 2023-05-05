@@ -14,8 +14,8 @@ load_dotenv()
 
 
 app = create_app()
-BASE = 'https://module-registry-website-4a33ebcq3a-uc.a.run.app/'
-# BASE = 'http://localhost:8000/'
+#BASE = 'https://module-registry-website-4a33ebcq3a-uc.a.run.app/'
+BASE = 'http://localhost:8080/'
 
 @app.route("/")
 def defaultPage():
@@ -133,8 +133,4 @@ def handleUploaded():
         abort(501)
     return response.json(), response.status_code
 
-
-if __name__ == "__main__":
-    # app.register_blueprint(bp)
-    app.run(host="localhost", port=8080, debug=True)
-    # app.run()
+app.run(host="localhost", port=8080, debug=True)
