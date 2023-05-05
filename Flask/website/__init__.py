@@ -17,7 +17,7 @@ def getconn():
             "pymysql",
             user="root",
             password="",
-            db="module-registry	",
+            db="module-registry",
             ip_type=IPTypes.PUBLIC
         )
         return conn
